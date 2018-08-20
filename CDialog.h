@@ -7,6 +7,7 @@
 class CGame;
 
 #include <iostream>
+#include <list>
 #include "CGame.h"
 #include "CGraph.h"
 #include "CState.h"
@@ -25,6 +26,7 @@ private:
 
 public:
     //Constructor
+    CDialog();
     CDialog(char* chName, void(CDialog::*createDialog)(), CGame* game);
 
     //Getter
@@ -33,6 +35,11 @@ public:
     CGraph<CState>* getGraph() {
         return m_dialogGraph;
     }
+
+    //parseDialiog: parse dialog from text file
+    void parseDialog();
+    int parseQuestion(int curLine, list<string> &l_Lines, CState* linkedState, int numState);
+    int parseText(int curLine, list<string> &l_Lines, CState* linkedState, int numState);
 
     //startDialog: dialog will be started    
     void startDialog(CGraph<CState>* node);

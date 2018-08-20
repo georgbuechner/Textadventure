@@ -221,7 +221,7 @@ public:
     }
     
     //getElement by node number
-    T1* iterateElements(int num)
+    T1* iterateElements(unsigned int num)
     {
         //Given number matches m_numElements of current element: return current element
         if(num == m_numElements)

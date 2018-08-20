@@ -5,6 +5,12 @@
 using namespace std;
 
 
+//Consturctor
+CDialog::CDialog()
+{
+    m_dialogGraph = new CGraph<CState>;
+}
+
 //constructor
 CDialog::CDialog(char* chName, void(CDialog::*createDialog)(), CGame* game)
 {
@@ -19,6 +25,114 @@ CDialog::CDialog(char* chName, void(CDialog::*createDialog)(), CGame* game)
     m_createDialog = createDialog;  //Assign function to create dialog
     (this->*m_createDialog)();      //Call "createDialog" to create the dialog
 }
+
+void CDialog::parseDialog()
+{
+    //Variables
+    string sBuffer;
+    list<string> l_Lines;
+
+    //Load dialog
+    ifstream read;
+    read.open("dog.txt");
+    
+    do
+    {
+        getline(read, sBuffer);
+        l_Lines.push_back(sBuffer); 
+        
+    }while(sBuffer[0] != '!');
+    
+    read.close();
+
+    //parse first line
+    list<string>::iterator it= l_Lines.begin();
+    advance(it,1);
+    string line = *it;
+    bool question;
+    if(line[0] == '?')
+        question = true;
+    else
+        question = false;
+    line.assign(l_Lines.front());
+    CState* state = new CState(1, (char*)line.c_str(), question);
+    m_dialogGraph->set(state);
+    
+    int counter = 0;
+    int numState = 1;
+    do
+    {
+        cout << "Checking what to do...\n";
+        numState+=101;
+        if(question == true)
+            counter = parseQuestion(counter+2, l_Lines, state, numState); 
+
+
+        list<string>::iterator it = l_Lines.begin();
+        advance(it, counter+2);
+        line.assign(*it);
+        if(line[0] == '?')
+            question = true;
+        else
+            question = false;
+
+        counter++;
+
+    }while(question == true);
+
+    cout << "Dialog created succsessfully\n\n";
+    startDialog(m_dialogGraph);
+}
+
+int CDialog::parseQuestion(int curLine, list<string> &l_Lines, CState* linkedState, int numState)
+{
+    cout << "Parsing question... \n";
+
+    list<string>::iterator it = l_Lines.begin();
+    advance(it,curLine);
+    string line = *it;
+
+    cout << line << "\n";
+
+    CState* state = new CState(numState, (char*)line.c_str(), false);
+    CList<CState>* list = new CList<CState>;
+    list->add(linkedState);
+    m_dialogGraph->add(state, list);
+
+    return parseText(curLine+1, l_Lines, state, numState+1);
+} 
+
+int CDialog::parseText(int curLine, list<string> &l_Lines, CState* linkedState, int numState)
+{
+    cout << "Parsing text... \n";
+
+    list<string>::iterator it = l_Lines.begin();
+    advance(it, curLine);
+    string line = *it;
+
+    cout << line << "\n"; 
+
+    advance(it, 1);
+    string lineNext = *it;
+    cout << "lineNext: " << lineNext << endl;
+    bool question;
+    if(lineNext[0] == '?')
+        question = true;
+    else
+        question = false;
+
+    CState* state = new CState(numState, (char*)line.c_str(), question);
+    CList<CState>* list = new CList<CState>;
+    list->add(linkedState);
+    m_dialogGraph->add(state, list);
+
+    if(question == true)
+        return parseQuestion(curLine+1, l_Lines, state, numState+1);
+
+    return curLine;
+}
+    
+
 
 void CDialog::createDialogMarx()
 {

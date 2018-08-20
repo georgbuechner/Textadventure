@@ -141,8 +141,6 @@ public:
     //Find a node by the number of its element
     CGraph* getNode(unsigned int num)
     {
-        CFunctions F;   //Class containing various functions (here: compare-function)
-
         //Check whether given number matches number of current element
         if(num == m_cur->getNum())
             return this;

@@ -15,13 +15,9 @@ void CGame::play()
     m_EM = new CEventManager;
     CFunctions F;
 
-    /*/Enter player's name
-    cout << "Enter your player's name:" << endl;
-    cout << ">";
-    cin.getline(chPlayerCommand, 127);
-
-    //Create player, all rooms, doors, people and items
-    gameCreate(chPlayerCommand); */
+    CDialog dialogTest;
+    dialogTest.parseDialog();
+    return;
 
     worldFactory();
 
